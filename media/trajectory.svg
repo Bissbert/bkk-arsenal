@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="700" viewBox="0 0 1120 700">
+<rect width="1120" height="700" fill="#0d1117"/>
+<rect x="24" y="24" width="1072" height="652" rx="12" fill="#161b22" stroke="#30363d"/>
+<text x="52" y="64" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="22px" font-weight="700" text-anchor="start">Source-derived drop after a horizontal launch</text>
+<text x="52" y="88" fill="#8b949e" font-family="system-ui, sans-serif" font-size="13px" font-weight="400" text-anchor="start">Discrete per-tick integration: drop = gravity × tick × (tick − 1) ÷ 2</text>
+<line x1="100" y1="110" x2="100" y2="585" stroke="#30363d"/>
+<line x1="100" y1="585" x2="1010" y2="585" stroke="#30363d"/>
+<text x="88" y="115" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="end">0</text>
+<text x="88" y="585" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="end">−27.3</text>
+<text x="555.0" y="627" fill="#8b949e" font-family="system-ui, sans-serif" font-size="13px" font-weight="400" text-anchor="middle">server ticks after launch</text>
+<text x="42" y="347.5" fill="#8b949e" font-family="system-ui, sans-serif" font-size="13px" font-weight="400" text-anchor="middle">vertical drop (blocks)</text>
+<line x1="100.0" y1="110" x2="100.0" y2="585" stroke="#30363d" stroke-dasharray="3 5"/>
+<text x="100.0" y="607" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="middle">0</text>
+<line x1="327.5" y1="110" x2="327.5" y2="585" stroke="#30363d" stroke-dasharray="3 5"/>
+<text x="327.5" y="607" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="middle">10</text>
+<line x1="555.0" y1="110" x2="555.0" y2="585" stroke="#30363d" stroke-dasharray="3 5"/>
+<text x="555.0" y="607" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="middle">20</text>
+<line x1="782.5" y1="110" x2="782.5" y2="585" stroke="#30363d" stroke-dasharray="3 5"/>
+<text x="782.5" y="607" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="middle">30</text>
+<line x1="1010.0" y1="110" x2="1010.0" y2="585" stroke="#30363d" stroke-dasharray="3 5"/>
+<text x="1010.0" y="607" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="middle">40</text>
+<polyline points="100.0,110.0 122.8,110.0 145.5,110.5 168.2,111.6 191.0,113.1 213.8,115.2 236.5,117.8 259.2,121.0 282.0,124.6 304.8,128.8 327.5,133.5 350.2,138.7 373.0,144.5 395.8,150.7 418.5,157.5 441.2,164.8 464.0,172.6 486.8,181.0 509.5,189.9 532.2,199.3 555.0,209.2 577.8,219.6 600.5,230.6 623.2,242.1 646.0,254.1 668.8,266.6 691.5,279.6 714.2,293.2 737.0,307.3 759.8,321.9 782.5,337.1 805.2,352.7 828.0,368.9 850.8,385.6 873.5,402.8 896.2,420.6 919.0,438.8 941.8,457.6 964.5,477.0 987.2,496.8 1010.0,517.1" fill="none" stroke="#58a6ff" stroke-width="3" stroke-linejoin="round"/>
+<line x1="110" y1="630" x2="134" y2="630" stroke="#58a6ff" stroke-width="3"/>
+<text x="142" y="635" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="start">launcher · 3 blocks/tick</text>
+<polyline points="100.0,110.0 122.8,110.0 145.5,110.6 168.2,111.8 191.0,113.7 213.8,116.1 236.5,119.1 259.2,122.8 282.0,127.1 304.8,131.9 327.5,137.4 350.2,143.5 373.0,150.2 395.8,157.5 418.5,165.4 441.2,173.9 464.0,183.1 486.8,192.8 509.5,203.2 532.2,214.1 555.0,225.7 577.8,237.9 600.5,250.7 623.2,264.1 646.0,278.1 668.8,292.7 691.5,307.9 714.2,323.8 737.0,340.2 759.8,357.2 782.5,374.9 805.2,393.2 828.0,412.1 850.8,431.5 873.5,451.6 896.2,472.3 919.0,493.7 941.8,515.6 964.5,538.1 987.2,561.2 1010.0,585.0" fill="none" stroke="#3fb950" stroke-width="3" stroke-linejoin="round"/>
+<line x1="395" y1="630" x2="419" y2="630" stroke="#3fb950" stroke-width="3"/>
+<text x="427" y="635" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="start">shotgun · 3.5 blocks/tick</text>
+<polyline points="100.0,110.0 122.8,110.0 145.5,110.4 168.2,111.3 191.0,112.6 213.8,114.3 236.5,116.4 259.2,119.0 282.0,121.9 304.8,125.3 327.5,129.2 350.2,133.4 373.0,138.1 395.8,143.3 418.5,148.8 441.2,154.8 464.0,161.2 486.8,168.0 509.5,175.2 532.2,182.9 555.0,191.0 577.8,199.5 600.5,208.5 623.2,217.8 646.0,227.7 668.8,237.9 691.5,248.5 714.2,259.6 737.0,271.1 759.8,283.1 782.5,295.4 805.2,308.2 828.0,321.4 850.8,335.1 873.5,349.1 896.2,363.6 919.0,378.6 941.8,393.9 964.5,409.7 987.2,425.9 1010.0,442.5" fill="none" stroke="#d29922" stroke-width="3" stroke-linejoin="round"/>
+<line x1="680" y1="630" x2="704" y2="630" stroke="#d29922" stroke-width="3"/>
+<text x="712" y="635" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="start">rifle · 45.25 blocks/tick</text>
+<polyline points="100.0,110.0 122.8,110.0 145.5,110.3 168.2,110.9 191.0,111.9 213.8,113.1 236.5,114.7 259.2,116.6 282.0,118.8 304.8,121.3 327.5,124.1 350.2,127.2 373.0,130.7 395.8,134.4 418.5,138.5 441.2,142.9 464.0,147.6 486.8,152.6 509.5,157.9 532.2,163.6 555.0,169.5 577.8,175.8 600.5,182.3 623.2,189.2 646.0,196.4 668.8,204.0 691.5,211.8 714.2,219.9 737.0,228.4 759.8,237.2 782.5,246.2 805.2,255.6 828.0,265.3 850.8,275.4 873.5,285.7 896.2,296.3 919.0,307.3 941.8,318.6 964.5,330.2 987.2,342.1 1010.0,354.3" fill="none" stroke="#bc8cff" stroke-width="3" stroke-linejoin="round"/>
+<line x1="110" y1="652" x2="134" y2="652" stroke="#bc8cff" stroke-width="3"/>
+<text x="142" y="657" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="start">sniper · 60 blocks/tick</text>
+<polyline points="100.0,110.0 122.8,110.0 145.5,110.3 168.2,111.0 191.0,112.1 213.8,113.5 236.5,115.2 259.2,117.3 282.0,119.7 304.8,122.5 327.5,125.7 350.2,129.1 373.0,133.0 395.8,137.1 418.5,141.7 441.2,146.5 464.0,151.8 486.8,157.3 509.5,163.2 532.2,169.5 555.0,176.1 577.8,183.1 600.5,190.4 623.2,198.0 646.0,206.0 668.8,214.4 691.5,223.1 714.2,232.1 737.0,241.5 759.8,251.3 782.5,261.4 805.2,271.8 828.0,282.6 850.8,293.7 873.5,305.2 896.2,317.1 919.0,329.2 941.8,341.8 964.5,354.6 987.2,367.9 1010.0,381.4" fill="none" stroke="#f85149" stroke-width="3" stroke-linejoin="round"/>
+<line x1="395" y1="652" x2="419" y2="652" stroke="#f85149" stroke-width="3"/>
+<text x="427" y="657" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="start">aa_cannon · 12 blocks/tick</text>
+<text x="52" y="666" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="start">The x-axis ends at the longest direct-weapon default cooldown: 40 ticks.</text>
+</svg>
