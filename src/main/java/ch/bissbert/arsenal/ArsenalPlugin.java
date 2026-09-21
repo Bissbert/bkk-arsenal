@@ -915,25 +915,36 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
         meta.setTitle("Arsenal Handbook");
         meta.setAuthor("BKK Arsenal");
         meta.setGeneration(BookMeta.Generation.ORIGINAL);
-        meta.addPage("BKK ARSENAL\n\nA field guide to the unified weapons system. Every weapon uses a named blaze rod; every custom round uses a firework star. Keep a compatible round in your offhand to select it. Without a selected round, the weapon uses its standard payload.");
-        meta.addPage("CONTROLS\n\nDirect weapons: right-click to fire where you look.\n\nIndirect weapons: right-click a block or entity to lock a target, then left-click to fire the calculated arc.\n\nThe target marker is only a lock indicator; the shell remains a server-side projectile until impact.");
+        addHandbookPages(meta, "BKK ARSENAL\n\nA field guide to the unified weapons system. Every weapon uses a named blaze rod; every custom round uses a firework star. Keep a compatible round in your offhand to select it. Without a selected round, the weapon uses its standard payload.");
+        addHandbookPages(meta, "CONTROLS\n\nDirect weapons: right-click to fire where you look.\n\nIndirect weapons: right-click a block or entity to lock a target, then left-click to fire the calculated arc.\n\nThe target marker is only a lock indicator; the shell remains a server-side projectile until impact.");
         StringBuilder weapons = new StringBuilder("WEAPON PLATFORMS\n\n");
         for (WeaponType weapon : WeaponType.values()) {
             weapons.append(weapon.title).append(" — ").append(weapon.indirect() ? "target-lock arc" : "direct fire").append("\n");
         }
-        meta.addPage(weapons.toString());
+        addHandbookPages(meta, weapons.toString());
         for (AmmoCategory category : AmmoCategory.values()) {
             StringBuilder page = new StringBuilder(category.title.toUpperCase(Locale.ROOT)).append(" AMMUNITION\n\n");
             for (MunitionType munition : munitionsFor(category.id)) {
                 page.append(munition.id).append(" — ").append(munition.title).append("\n");
             }
             page.append("\nCommand: /arsenal ammo <player> ").append(category.id).append(" <munition> [amount]");
-            meta.addPage(page.toString());
+            addHandbookPages(meta, page.toString());
         }
-        meta.addPage("AMMO LOOKUP\n\n/arsenal ammo <player> list\nShows every category.\n\n/arsenal ammo <player> list <category-or-weapon>\nShows only rounds for one platform.\n\n/arsenal ammo <player> <weapon> <munition> [amount]\nThe weapon-qualified form prevents incompatible ammunition from being issued.");
-        meta.addPage("FIELD NOTES\n\nSmoke creates a drifting volumetric cloud. Illumination rounds create temporary lights. Incendiaries keep full entity damage while leaving a smaller crater and a larger fire patch. Penetrators, airbursts, cluster rounds and THE DEPTH CHARGE have distinct effects. Projectiles have no artificial distance limit; only generated terrain is traversed.");
+        addHandbookPages(meta, "AMMO LOOKUP\n\n/arsenal ammo <player> list\nShows every category.\n\n/arsenal ammo <player> list <category-or-weapon>\nShows only rounds for one platform.\n\n/arsenal ammo <player> <weapon> <munition> [amount]\nThe weapon-qualified form prevents incompatible ammunition from being issued.");
+        addHandbookPages(meta, "FIELD NOTES\n\nSmoke creates a drifting volumetric cloud. Illumination rounds create temporary lights. Incendiaries keep full entity damage while leaving a smaller crater and a larger fire patch. Penetrators, airbursts, cluster rounds and THE DEPTH CHARGE have distinct effects. Projectiles have no artificial distance limit; only generated terrain is traversed.");
         item.setItemMeta(meta);
         return item;
+    }
+
+    private void addHandbookPages(BookMeta meta, String text) {
+        String remaining = text;
+        while (remaining.length() > 240) {
+            int split = remaining.lastIndexOf('\n', 240);
+            if (split < 80) split = 240;
+            meta.addPage(remaining.substring(0, split));
+            remaining = remaining.substring(split).stripLeading();
+        }
+        if (!remaining.isEmpty()) meta.addPage(remaining);
     }
 
     private boolean giveHandbook(CommandSender sender, String[] args) {
@@ -1056,6 +1067,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
         else if (args.length == 2 && args[0].equalsIgnoreCase("give")) choices = getServer().getOnlinePlayers().stream().map(Player::getName).toList();
         else if (args.length == 2 && args[0].equalsIgnoreCase("ammo")) choices = getServer().getOnlinePlayers().stream().map(Player::getName).toList();
         else if (args.length == 2 && args[0].equalsIgnoreCase("cooldown")) choices = Arrays.stream(WeaponType.values()).map(t -> t.id).toList();
+        else if (args.length == 2 && args[0].equalsIgnoreCase("handbook")) choices = getServer().getOnlinePlayers().stream().map(Player::getName).toList();
         else if (args.length == 3 && args[0].equalsIgnoreCase("give")) choices = Arrays.stream(WeaponType.values()).map(t -> t.id).toList();
         else if (args.length == 3 && args[0].equalsIgnoreCase("ammo")) {
             choices = new ArrayList<>(); choices.add("list"); choices.addAll(ammoScopes()); choices.addAll(Arrays.stream(MunitionType.values()).map(m -> m.id).toList());
