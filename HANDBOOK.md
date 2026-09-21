@@ -6,6 +6,8 @@ This is the field reference for the clean Arsenal system. Every weapon is a name
 
 Direct weapons fire on right-click in the direction the player is looking. Mortars and artillery use two-stage controls: right-click a visible block or entity to lock the target, then left-click to release the shell on the calculated arc. A compatible round in the offhand selects the payload; with no selected round, the platform uses its standard payload.
 
+After firing, the weapon slot shows Minecraft's native cooldown overlay and the action bar shows seconds remaining with a progress bar. The indicator disappears when the shot is ready.
+
 ## Weapon platforms and sprites
 
 | Platform | Role | Controls | Sprite |

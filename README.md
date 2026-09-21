@@ -18,6 +18,8 @@ A clean Paper 1.21.11 / Java 21 weapons system. It replaces the separate launche
 
 All weapons use the same projectile lifecycle, swept collision, chunk-ticket handling, cooldowns, ammunition selection, and permission model. Standard rounds use plain TNT as the fallback; custom ammunition is selected from the offhand.
 
+After firing, the blaze-rod hotbar slot shows Minecraft's native cooldown overlay and the action bar displays a live seconds-remaining countdown with a progress bar.
+
 ## Ammunition categories
 
 The system includes platform-specific ammo categories. Every round is labeled with its category in-game, and compatibility is explicit, so shared artillery rounds can still be used by every weapon for which they make sense.

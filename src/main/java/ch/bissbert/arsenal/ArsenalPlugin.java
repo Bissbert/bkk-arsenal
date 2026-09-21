@@ -146,6 +146,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
     private NamespacedKey grenadeKey;
     private final Map<UUID, Shot> shots = new HashMap<>();
     private final Map<UUID, Long> cooldowns = new HashMap<>();
+    private final Map<UUID, Integer> cooldownTotalTicks = new HashMap<>();
     private final Map<UUID, Location> mortarTargets = new HashMap<>();
     private final Set<Block> activeLights = new HashSet<>();
     private final Map<Block, Integer> lightReferences = new HashMap<>();
@@ -175,6 +176,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
         for (Shot shot : shots.values()) shot.cleanup();
         shots.clear();
         cooldowns.clear();
+        cooldownTotalTicks.clear();
         mortarTargets.clear();
         for (Block block : List.copyOf(activeLights)) releaseLight(block);
         activeLights.clear();
@@ -398,6 +400,8 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
         } else if (!free) consumeAmmo(player);
         int effectiveCooldown = payload == MunitionType.DEMOLITION ? weapon.cooldown * 2 : weapon.cooldown;
         cooldowns.put(player.getUniqueId(), now + effectiveCooldown * 50_000_000L);
+        cooldownTotalTicks.put(player.getUniqueId(), effectiveCooldown);
+        player.setCooldown(Material.BLAZE_ROD, effectiveCooldown);
         for (int pellet = 0; pellet < projectileCount; pellet++) {
             Vector shotDirection = spread(direction, shotSpread);
             BlockDisplay display = start.getWorld().spawn(start, BlockDisplay.class, entity -> {
@@ -555,6 +559,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
     }
 
     private void tick() {
+        updateCooldownIndicators();
         // Snapshot permits other plugins' explosion callbacks to unload a world
         // or disconnect a player without invalidating this iteration.
         for (Shot shot : List.copyOf(shots.values())) {
@@ -569,6 +574,30 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
                 shot.cleanup();
                 getLogger().log(java.util.logging.Level.WARNING, "Removed failed Arsenal projectile", exception);
             }
+        }
+    }
+
+    private void updateCooldownIndicators() {
+        long now = System.nanoTime();
+        for (Player player : getServer().getOnlinePlayers()) {
+            UUID uuid = player.getUniqueId();
+            Long until = cooldowns.get(uuid);
+            if (until == null) continue;
+            long remainingNanos = until - now;
+            if (remainingNanos <= 0) {
+                cooldowns.remove(uuid);
+                cooldownTotalTicks.remove(uuid);
+                continue;
+            }
+            int remainingTicks = Math.max(1, (int) Math.ceil(remainingNanos / 50_000_000.0));
+            if (player.getCooldown(Material.BLAZE_ROD) < remainingTicks - 1)
+                player.setCooldown(Material.BLAZE_ROD, remainingTicks);
+            if (weaponType(player.getInventory().getItemInMainHand()) == null) continue;
+            int totalTicks = Math.max(1, cooldownTotalTicks.getOrDefault(uuid, remainingTicks));
+            int filled = Math.max(1, Math.min(10, (int) Math.ceil(10.0 * remainingTicks / totalTicks)));
+            String bar = "■".repeat(filled) + "·".repeat(10 - filled);
+            double seconds = Math.round(remainingTicks / 20.0 * 10.0) / 10.0;
+            player.sendActionBar(Component.text("Shot cooldown " + seconds + "s  " + bar, NamedTextColor.YELLOW));
         }
     }
 
@@ -858,6 +887,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
     private void cleanupOwner(UUID owner) {
         shots.values().removeIf(shot -> { if (!shot.owner.equals(owner)) return false; shot.cleanup(); return true; });
         cooldowns.remove(owner);
+        cooldownTotalTicks.remove(owner);
     }
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void unload(WorldUnloadEvent event) {
