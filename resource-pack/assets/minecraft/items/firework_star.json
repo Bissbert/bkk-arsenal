@@ -4,6 +4,7 @@
     "property": "minecraft:custom_model_data",
     "index": 0,
     "cases": [
+      {"when": "arsenal:entity_round", "model": {"type": "minecraft:model", "model": "arsenal:item/entity_round"}},
       {"when": "arsenal:he_rocket", "model": {"type": "minecraft:model", "model": "arsenal:item/he_rocket"}},
       {"when": "arsenal:demolition", "model": {"type": "minecraft:model", "model": "arsenal:item/demolition"}},
       {"when": "arsenal:sticky", "model": {"type": "minecraft:model", "model": "arsenal:item/sticky"}},

@@ -86,6 +86,9 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
         }
     }
     private enum MunitionType {
+        ENTITY_ROUND("entity_round", "Entity-Only Round", "arsenal:entity_round", WeaponType.LAUNCHER, NamedTextColor.WHITE,
+                WeaponType.SHOTGUN, WeaponType.RIFLE, WeaponType.SNIPER, WeaponType.MORTAR,
+                WeaponType.FIELD_CANNON, WeaponType.HOWITZER, WeaponType.ROCKET_ARTILLERY, WeaponType.AA_CANNON),
         HE_ROCKET("he_rocket", "HE Rocket", "arsenal:he_rocket", WeaponType.LAUNCHER, NamedTextColor.RED),
         DEMOLITION("demolition", "Demolition Rocket", "arsenal:demolition", WeaponType.LAUNCHER, NamedTextColor.DARK_RED),
         STICKY("sticky", "Sticky Charge", "arsenal:sticky", WeaponType.LAUNCHER, NamedTextColor.YELLOW),
@@ -669,6 +672,15 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
                     finish();
                     return false;
                 }
+                if (munition == MunitionType.ENTITY_ROUND) {
+                    if (hit.getHitEntity() instanceof LivingEntity target) {
+                        target.damage(entityDamage(), shooter);
+                        world.spawnParticle(Particle.CRIT, impact, 12, .15, .15, .15, .08);
+                        world.playSound(impact, Sound.ENTITY_ARROW_HIT_PLAYER, .8f, 1.25f);
+                    }
+                    finish();
+                    return false;
+                }
                 double penetration = switch (munition) {
                     case PENETRATING -> settings.penetrationDepth; case ANTI_MATERIEL -> 6; case ARMOR_PIERCING -> 2;
                     case ARTILLERY_AP -> settings.penetrationDepth + 4;
@@ -683,6 +695,20 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
                     position, 1, 0, 0, 0, 0);
             velocity.setY(velocity.getY() - options.gravity);
             return true;
+        }
+
+        private double entityDamage() {
+            return switch (weapon) {
+                case LAUNCHER -> 10.0;
+                case SHOTGUN -> 5.0;
+                case RIFLE -> 18.0;
+                case SNIPER -> 1000.0;
+                case MORTAR -> 28.0;
+                case FIELD_CANNON -> 40.0;
+                case HOWITZER -> 60.0;
+                case ROCKET_ARTILLERY -> 24.0;
+                case AA_CANNON -> 14.0;
+            };
         }
 
         private boolean hasNearbyTarget(World world, Location center, UUID owner, double radius) {

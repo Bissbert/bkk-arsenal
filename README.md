@@ -31,6 +31,8 @@ The system includes platform-specific ammo categories. Every round is labeled wi
 - Mortar: `he`, `penetrating`, `depth_charge`, `airburst`, `cluster`, `incendiary_grenade`, `smoke`, `illumination`
 - Artillery: `artillery_he`, `artillery_ap`, `artillery_smoke`, `artillery_illumination`, `rocket_salvo`, `incendiary_shell`, `aa_proximity`
 
+Every platform also accepts `entity_round`. It damages only the living entity it hits, never creates an explosion, and never changes blocks. Damage scales with the firing platform; the sniper profile is lethal to ordinary entities.
+
 Use `/arsenal ammo <player> list` to print all categories. Use `/arsenal ammo <player> list <category-or-weapon>` to filter the list, or use a weapon-qualified grant such as `/arsenal ammo Bissbert mortar depth_charge 4`. The weapon-qualified form rejects incompatible ammunition before it is issued. Short form `/arsenal ammo <player> <munition> [amount]` remains available.
 
 Mortar and artillery shells support target-lock arcs, penetration, delayed depth charges, airbursts, cluster strikes, dense volumetric smoke, illumination lights, markers, redstone disruption, incendiary fire, and reduced-terrain incendiary craters.
