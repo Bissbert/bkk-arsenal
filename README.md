@@ -18,9 +18,9 @@ A clean Paper 1.21.11 / Java 21 weapons system. It replaces the separate launche
 
 All weapons use the same projectile lifecycle, swept collision, chunk-ticket handling, cooldowns, ammunition selection, and permission model. Standard rounds use plain TNT as the fallback; custom ammunition is selected from the offhand.
 
-## Ammunition
+## Ammunition categories
 
-The system includes direct-fire rounds, mortar rounds, and artillery shells. Compatibility is explicit, so a round is accepted by every weapon for which it makes sense.
+The system includes platform-specific ammo categories. Every round is labeled with its category in-game, and compatibility is explicit, so shared artillery rounds can still be used by every weapon for which they make sense.
 
 - Launcher: `he_rocket`, `demolition`, `sticky`
 - Shotgun: `buckshot`, `breaching`, `slug`, `incendiary_shot`
@@ -29,7 +29,11 @@ The system includes direct-fire rounds, mortar rounds, and artillery shells. Com
 - Mortar: `he`, `penetrating`, `depth_charge`, `airburst`, `cluster`, `incendiary_grenade`, `smoke`, `illumination`
 - Artillery: `artillery_he`, `artillery_ap`, `artillery_smoke`, `artillery_illumination`, `rocket_salvo`, `incendiary_shell`, `aa_proximity`
 
+Use `/arsenal ammo <player> list` to print all categories. Use `/arsenal ammo <player> list <category-or-weapon>` to filter the list, or use a weapon-qualified grant such as `/arsenal ammo Bissbert mortar depth_charge 4`. The weapon-qualified form rejects incompatible ammunition before it is issued. Short form `/arsenal ammo <player> <munition> [amount]` remains available.
+
 Mortar and artillery shells support target-lock arcs, penetration, delayed depth charges, airbursts, cluster strikes, dense volumetric smoke, illumination lights, markers, redstone disruption, incendiary fire, and reduced-terrain incendiary craters.
+
+Impact is platform-specific: mortars use the baseline shell power, field cannons are stronger, howitzers are the heaviest single-shot platform, rocket artillery trades individual impact for a larger salvo, and anti-air shells use a smaller proximity blast. Shared artillery ammunition keeps these platform-specific scaling rules.
 
 ## Commands
 
@@ -39,6 +43,7 @@ Mortar and artillery shells support target-lock arcs, penetration, delayed depth
 /arsenal cooldown [weapon] <seconds>
 /arsenal reload
 /arsenal status
+/arsenal handbook [player]
 ```
 
 Permissions:
@@ -46,6 +51,7 @@ Permissions:
 - `arsenal.use` — use weapons (everyone by default)
 - `arsenal.admin` — issue weapons/ammunition and reload settings (operators by default)
 - `arsenal.infiniteammo` — bypass survival ammunition consumption (disabled by default)
+- `arsenal.handbook` — receive the in-game handbook (everyone by default)
 
 There is deliberately no compatibility layer for the retired plugins. Existing items from those plugins are not recognized; issue new Arsenal items after installation.
 
@@ -57,14 +63,18 @@ Only already-generated chunks are ticketed; the plugin does not generate terrain
 
 Smoke is emitted as a layered, drifting three-dimensional particle volume. Incendiaries preserve full entity damage radius while using a small terrain crater and a larger persistent fire patch. Temporary illumination lights share ownership and restore their original blocks.
 
+## Handbook
+
+`HANDBOOK.md` is the printable reference. Players can receive the same guide in-game with `/arsenal handbook`; it contains controls, weapon platforms, category-specific ammunition pages, lookup commands, and effect notes.
+
 ## Resource pack
 
-The optional pack contains 32×32 vanilla-style models under the `arsenal` namespace for every weapon and ammunition type. Without it, the plugin remains fully functional using named blaze rods and firework stars. The pack has no dependency on the old plugin namespaces and is safe to merge into the existing Dungeons & Taverns pack by merging selector cases rather than replacing selector files.
+The optional pack contains 16×16 vanilla-style sprites and models under the `arsenal` namespace for every weapon and ammunition type. Without it, the plugin remains fully functional using named blaze rods and firework stars. The pack has no dependency on the old plugin namespaces and is safe to merge into the existing Dungeons & Taverns pack by merging selector cases rather than replacing selector files.
 
 Build it with:
 
 ```sh
-zip -r target/BKKArsenal-resource-pack-1.0.0.zip pack.mcmeta assets
+zip -r target/BKKArsenal-resource-pack-1.1.0.zip pack.mcmeta assets
 ```
 
 ## Build and tests

@@ -7,7 +7,7 @@ description: A modular ballistic weapons and artillery system.
 commands:
   arsenal:
     description: Give weapons/ammunition or manage Arsenal settings.
-    usage: /arsenal [give <player> [type] [amount]|ammo <player> <munition> [amount]|cooldown [type] <seconds>|reload|status]
+    usage: /arsenal [give <player> [type] [amount]|ammo <player> [list [category-or-weapon]|<munition> [amount]|<weapon> <munition> [amount]]|cooldown [type] <seconds>|reload|status|handbook [player]]
     permission: arsenal.admin
 permissions:
   arsenal.admin:
@@ -19,3 +19,6 @@ permissions:
   arsenal.infiniteammo:
     description: Fire without consuming ammunition in survival.
     default: false
+  arsenal.handbook:
+    description: Receive the Arsenal Handbook.
+    default: true

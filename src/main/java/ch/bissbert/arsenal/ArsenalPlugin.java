@@ -17,6 +17,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.world.*;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,6 +30,36 @@ import org.joml.Vector3f;
 import java.util.*;
 
 public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExecutor {
+    private enum AmmoCategory {
+        LAUNCHER("launcher", "Launcher", NamedTextColor.RED),
+        SHOTGUN("shotgun", "Shotgun", NamedTextColor.GOLD),
+        RIFLE("rifle", "Rifle", NamedTextColor.GREEN),
+        SNIPER("sniper", "Sniper", NamedTextColor.AQUA),
+        MORTAR("mortar", "Mortar", NamedTextColor.DARK_PURPLE),
+        ARTILLERY("artillery", "Artillery", NamedTextColor.DARK_RED);
+        final String id, title;
+        final NamedTextColor color;
+        AmmoCategory(String id, String title, NamedTextColor color) {
+            this.id = id; this.title = title; this.color = color;
+        }
+        static AmmoCategory parse(String value) {
+            if (value == null) return null;
+            String normalized = value.replace('-', '_');
+            for (AmmoCategory category : values()) if (category.id.equalsIgnoreCase(normalized)) return category;
+            return null;
+        }
+        static AmmoCategory forWeapon(WeaponType weapon) {
+            return switch (weapon) {
+                case LAUNCHER -> LAUNCHER;
+                case SHOTGUN -> SHOTGUN;
+                case RIFLE -> RIFLE;
+                case SNIPER -> SNIPER;
+                case MORTAR -> MORTAR;
+                case FIELD_CANNON, HOWITZER, ROCKET_ARTILLERY, AA_CANNON -> ARTILLERY;
+            };
+        }
+    }
+
     private enum WeaponType {
         LAUNCHER("launcher", "Launcher", "arsenal:launcher", NamedTextColor.RED),
         SHOTGUN("shotgun", "Shotgun", "arsenal:shotgun", NamedTextColor.GOLD),
@@ -45,7 +76,9 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
             this.id = id; this.title = title; this.model = model; this.color = color;
         }
         static WeaponType parse(String value) {
-            for (WeaponType type : values()) if (type.id.equalsIgnoreCase(value)) return type;
+            if (value == null) return null;
+            String normalized = value.replace('-', '_');
+            for (WeaponType type : values()) if (type.id.equalsIgnoreCase(normalized)) return type;
             return null;
         }
         boolean indirect() {
@@ -94,8 +127,13 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
             this.compatible = EnumSet.of(weapon, additional);
         }
         static MunitionType parse(String value) {
-            for (MunitionType type : values()) if (type.id.equalsIgnoreCase(value)) return type;
+            if (value == null) return null;
+            String normalized = value.replace('-', '_');
+            for (MunitionType type : values()) if (type.id.equalsIgnoreCase(normalized)) return type;
             return null;
+        }
+        AmmoCategory category() {
+            return AmmoCategory.forWeapon(weapon);
         }
         static MunitionType standard(WeaponType weapon) { return switch (weapon) {
             case LAUNCHER -> HE_ROCKET; case SHOTGUN -> BUCKSHOT; case RIFLE -> STANDARD;
@@ -181,7 +219,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
         String p = "weapons." + id + ".";
         return new WeaponSettings(number(weaponKey(id, "speed"), speed, .1, 100),
                 number(weaponKey(id, "gravity"), gravity, 0, .5),
-                (float) number(weaponKey(id, "explosion-power"), power, 0, 8),
+                (float) number(weaponKey(id, "explosion-power"), power, 0, 16),
                 (int) number(weaponKey(id, "cooldown-ticks"), cooldown, 1, 1200),
                 (int) number(p + "projectiles", pellets, 1, 16), number(p + "spread-degrees", spread, 0, 30));
     }
@@ -226,8 +264,12 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
     private ItemStack munition(MunitionType type, int amount) {
         ItemStack item = new ItemStack(Material.FIREWORK_STAR, amount);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text(type.title, type.color).decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(lore(type.weapon.title + " ammunition."), lore("Hold in offhand to select this round.")));
+        Component category = Component.text("[" + type.category().title + "] ", type.category().color)
+                .decoration(TextDecoration.ITALIC, false);
+        meta.displayName(category.append(Component.text(type.title, type.color)
+                .decoration(TextDecoration.ITALIC, false)));
+        meta.lore(List.of(lore("Category: " + type.category().title),
+                lore(type.weapon.title + " ammunition."), lore("Hold in offhand to select this round.")));
         meta.getPersistentDataContainer().set(grenadeKey, PersistentDataType.STRING, type.id);
         var model = meta.getCustomModelDataComponent(); model.setStrings(List.of(type.model)); meta.setCustomModelDataComponent(model);
         item.setItemMeta(meta);
@@ -372,7 +414,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
             });
             Vector projectileVelocity = targetedVelocity == null ? shotDirection.multiply(weapon.speed) : targetedVelocity.clone();
             shots.put(display.getUniqueId(), new Shot(player.getUniqueId(), display, start.clone(),
-                    projectileVelocity, weapon, payload));
+                    projectileVelocity, type, weapon, payload));
         }
         start.getWorld().playSound(start, Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, .8f, .65f);
         player.swingMainHand();
@@ -534,14 +576,16 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
         final UUID owner;
         final BlockDisplay display;
         final Vector velocity;
+        final WeaponType weapon;
         final WeaponSettings options;
         final MunitionType munition;
         final FlightState flight;
         final Set<ChunkPos> ticketedChunks = new HashSet<>();
         int stickyFuse = -1;
         Location position;
-        Shot(UUID owner, BlockDisplay display, Location position, Vector velocity, WeaponSettings options, MunitionType munition) {
-            this.owner = owner; this.display = display; this.position = position;
+        Shot(UUID owner, BlockDisplay display, Location position, Vector velocity, WeaponType weapon,
+             WeaponSettings options, MunitionType munition) {
+            this.owner = owner; this.display = display; this.position = position; this.weapon = weapon;
             this.velocity = velocity; this.options = options; this.munition = munition;
             this.flight = new FlightState();
         }
@@ -630,20 +674,24 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
                 case ILLUMINATION, ARTILLERY_ILLUMINATION -> spawnIllumination(location);
                 case CLUSTER, ROCKET_SALVO -> spawnCluster(shooter, location);
                 case SHATTER -> {
-                    world.createExplosion(shooter, location, 2, false, settings.blockDamage, false);
+                    float shatterPower = scaledImpact(2);
+                    world.createExplosion(shooter, location, shatterPower, false, settings.blockDamage, false);
                     for (int i = 0; i < 6; i++) {
                         double angle = i * Math.PI / 3;
                         world.createExplosion(shooter, location.clone().add(Math.cos(angle) * 3, 0, Math.sin(angle) * 3),
-                                1.2f, false, settings.blockDamage, false);
+                                scaledImpact(1.2f), false, settings.blockDamage, false);
                     }
                 }
                 default -> {
                     float actual = switch (munition) {
-                        case DEMOLITION, ANTI_MATERIEL -> 7; case SLUG -> 3.5f; case BREACHING, ARMOR_PIERCING -> 2;
+                        case DEMOLITION -> scaledImpact(7); case ANTI_MATERIEL -> scaledImpact(7); case SLUG -> scaledImpact(3.5f); case BREACHING, ARMOR_PIERCING -> scaledImpact(2);
                         case TRACER -> 1; case INCENDIARY_SHOT -> 1.2f; case PENETRATING, ARTILLERY_AP -> settings.penetratingPower;
-                        case AIRBURST, AA_PROXIMITY -> settings.airburstPower; case INCENDIARY_GRENADE, INCENDIARY_SHELL -> 3;
-                        case ARTILLERY_HE -> Math.max(power, 7); default -> power;
+                        case AIRBURST -> settings.airburstPower; case AA_PROXIMITY -> scaledImpact(Math.min(4, power));
+                        case INCENDIARY_GRENADE -> 3; case INCENDIARY_SHELL -> scaledImpact(3);
+                        case ARTILLERY_HE -> scaledImpact(power); default -> power;
                     };
+                    if (munition == MunitionType.PENETRATING || munition == MunitionType.ARTILLERY_AP)
+                        actual = scaledImpact(actual);
                     boolean incendiary = munition == MunitionType.INCENDIARY_SHOT
                             || munition == MunitionType.INCENDIARY_GRENADE || munition == MunitionType.INCENDIARY_SHELL;
                     boolean exploded = world.createExplosion(shooter, location, actual, incendiary || settings.fire,
@@ -655,6 +703,21 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
                 }
             }
             return false;
+        }
+
+        private float impactScale() {
+            return switch (weapon) {
+                case MORTAR -> 1.0f;
+                case FIELD_CANNON -> 1.15f;
+                case HOWITZER -> 1.45f;
+                case ROCKET_ARTILLERY -> 0.80f;
+                case AA_CANNON -> 0.65f;
+                default -> 1.0f;
+            };
+        }
+
+        private float scaledImpact(float base) {
+            return Math.clamp(base * impactScale(), 0.0f, 16.0f);
         }
 
         private boolean finish() {
@@ -732,6 +795,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
 
         private void spawnCluster(Player shooter, Location location) {
             World world = location.getWorld();
+            float submunitionPower = munition == MunitionType.ROCKET_SALVO ? 2.4f : 1.8f;
             for (int i = 0; i < 8; i++) {
                 double angle = i * Math.PI / 4; int delay = i * 2;
                 Location start = location.clone().add(Math.cos(angle) * 5, 0, Math.sin(angle) * 5);
@@ -739,7 +803,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
                     RayTraceResult ground = world.rayTraceBlocks(start, new Vector(0, -1, 0), 32, FluidCollisionMode.ALWAYS, false);
                     Location target = ground == null ? start : ground.getHitPosition().toLocation(world);
                     world.spawnParticle(Particle.FLAME, start, 8, .2, 1, .2, .03);
-                    world.createExplosion(shooter, target, 1.8f, false, settings.blockDamage, false);
+                    world.createExplosion(shooter, target, scaledImpact(submunitionPower), false, settings.blockDamage, false);
                 }, delay);
             }
         }
@@ -807,7 +871,92 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
                 && !shots.containsKey(display.getUniqueId())) display.remove();
     }
 
+    private List<MunitionType> munitionsFor(String scope) {
+        WeaponType weapon = WeaponType.parse(scope);
+        if (weapon != null) return Arrays.stream(MunitionType.values())
+                .filter(munition -> munition.compatible.contains(weapon)).toList();
+        AmmoCategory category = AmmoCategory.parse(scope);
+        if (category != null) return Arrays.stream(MunitionType.values())
+                .filter(munition -> munition.category() == category).toList();
+        return List.of();
+    }
+
+    private List<MunitionType> allMunitions() {
+        return Arrays.asList(MunitionType.values());
+    }
+
+    private List<String> ammoScopes() {
+        List<String> scopes = new ArrayList<>();
+        for (AmmoCategory category : AmmoCategory.values()) scopes.add(category.id);
+        for (WeaponType weapon : WeaponType.values()) scopes.add(weapon.id);
+        return scopes;
+    }
+
+    private void sendAmmoList(CommandSender sender, String scope) {
+        List<MunitionType> munitions = scope == null ? allMunitions() : munitionsFor(scope);
+        if (scope != null && munitions.isEmpty()) {
+            sender.sendMessage("Unknown ammo category or weapon. Use tab completion to choose one.");
+            return;
+        }
+        if (scope == null) {
+            sender.sendMessage("Ammo categories: launcher, shotgun, rifle, sniper, mortar, artillery.");
+            for (AmmoCategory category : AmmoCategory.values()) sendAmmoList(sender, category.id);
+            return;
+        }
+        WeaponType weapon = WeaponType.parse(scope);
+        AmmoCategory category = AmmoCategory.parse(scope);
+        String title = weapon != null ? weapon.title + " ammunition" : category.title + " ammunition";
+        sender.sendMessage(title + ": " + munitions.stream().map(m -> m.id).reduce((a, b) -> a + ", " + b).orElse("none"));
+    }
+
+    private ItemStack handbook() {
+        ItemStack item = new ItemStack(Material.WRITTEN_BOOK);
+        BookMeta meta = (BookMeta) item.getItemMeta();
+        meta.setTitle("Arsenal Handbook");
+        meta.setAuthor("BKK Arsenal");
+        meta.setGeneration(BookMeta.Generation.ORIGINAL);
+        meta.addPage("BKK ARSENAL\n\nA field guide to the unified weapons system. Every weapon uses a named blaze rod; every custom round uses a firework star. Keep a compatible round in your offhand to select it. Without a selected round, the weapon uses its standard payload.");
+        meta.addPage("CONTROLS\n\nDirect weapons: right-click to fire where you look.\n\nIndirect weapons: right-click a block or entity to lock a target, then left-click to fire the calculated arc.\n\nThe target marker is only a lock indicator; the shell remains a server-side projectile until impact.");
+        StringBuilder weapons = new StringBuilder("WEAPON PLATFORMS\n\n");
+        for (WeaponType weapon : WeaponType.values()) {
+            weapons.append(weapon.title).append(" — ").append(weapon.indirect() ? "target-lock arc" : "direct fire").append("\n");
+        }
+        meta.addPage(weapons.toString());
+        for (AmmoCategory category : AmmoCategory.values()) {
+            StringBuilder page = new StringBuilder(category.title.toUpperCase(Locale.ROOT)).append(" AMMUNITION\n\n");
+            for (MunitionType munition : munitionsFor(category.id)) {
+                page.append(munition.id).append(" — ").append(munition.title).append("\n");
+            }
+            page.append("\nCommand: /arsenal ammo <player> ").append(category.id).append(" <munition> [amount]");
+            meta.addPage(page.toString());
+        }
+        meta.addPage("AMMO LOOKUP\n\n/arsenal ammo <player> list\nShows every category.\n\n/arsenal ammo <player> list <category-or-weapon>\nShows only rounds for one platform.\n\n/arsenal ammo <player> <weapon> <munition> [amount]\nThe weapon-qualified form prevents incompatible ammunition from being issued.");
+        meta.addPage("FIELD NOTES\n\nSmoke creates a drifting volumetric cloud. Illumination rounds create temporary lights. Incendiaries keep full entity damage while leaving a smaller crater and a larger fire patch. Penetrators, airbursts, cluster rounds and THE DEPTH CHARGE have distinct effects. Projectiles have no artificial distance limit; only generated terrain is traversed.");
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private boolean giveHandbook(CommandSender sender, String[] args) {
+        if (args.length > 2) { sender.sendMessage("Usage: /arsenal handbook [player]"); return true; }
+        Player target;
+        if (args.length == 2) {
+            if (!sender.hasPermission("arsenal.admin")) { sender.sendMessage("Only admins can give the handbook to another player."); return true; }
+            target = getServer().getPlayerExact(args[1]);
+        } else target = sender instanceof Player player ? player : null;
+        if (target == null) { sender.sendMessage("You must be a player or specify an online player."); return true; }
+        Map<Integer, ItemStack> leftover = target.getInventory().addItem(handbook());
+        if (!leftover.isEmpty()) { sender.sendMessage("The player does not have enough inventory space."); return true; }
+        sender.sendMessage("Gave the Arsenal Handbook to " + target.getName() + ".");
+        return true;
+    }
+
     @Override public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length >= 1 && args[0].equalsIgnoreCase("handbook")) {
+            if (!sender.hasPermission("arsenal.handbook") && !sender.hasPermission("arsenal.admin")) {
+                sender.sendMessage("You do not have permission."); return true;
+            }
+            return giveHandbook(sender, args);
+        }
         if (!sender.hasPermission("arsenal.admin")) { sender.sendMessage("You do not have permission."); return true; }
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             reloadConfig(); settings = readSettings(); sender.sendMessage("Arsenal configuration reloaded."); return true;
@@ -840,17 +989,37 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
             }
             return true;
         }
-        if ((args.length == 3 || args.length == 4) && args[0].equalsIgnoreCase("ammo")) {
+        if (args.length >= 3 && args.length <= 5 && args[0].equalsIgnoreCase("ammo")) {
             Player target = getServer().getPlayerExact(args[1]);
-            MunitionType grenade = MunitionType.parse(args[2]);
-            int amount = 1;
-            if (args.length == 4) try { amount = Integer.parseInt(args[3]); } catch (NumberFormatException exception) { amount = 0; }
             if (target == null) { sender.sendMessage("That player must be online."); return true; }
-            if (grenade == null) { sender.sendMessage("Unknown munition. Use tab completion to list ammunition IDs."); return true; }
+            if (args[2].equalsIgnoreCase("list")) {
+                if (args.length > 4) { sender.sendMessage("Usage: /arsenal ammo <player> list [category-or-weapon]"); return true; }
+                sendAmmoList(sender, args.length == 4 ? args[3] : null);
+                return true;
+            }
+            WeaponType scopeWeapon = WeaponType.parse(args[2]);
+            AmmoCategory scopeCategory = AmmoCategory.parse(args[2]);
+            if (args.length == 3 && (scopeWeapon != null || scopeCategory != null)) {
+                sendAmmoList(sender, args[2]);
+                return true;
+            }
+            String munitionId = scopeWeapon != null || scopeCategory != null ? args[3] : args[2];
+            MunitionType grenade = MunitionType.parse(munitionId);
+            if (grenade == null) { sender.sendMessage("Unknown munition. Use /arsenal ammo " + target.getName() + " list."); return true; }
+            if (scopeWeapon != null && !grenade.compatible.contains(scopeWeapon)) {
+                sender.sendMessage(grenade.title + " is not compatible with the " + scopeWeapon.title + "."); return true;
+            }
+            if (scopeCategory != null && grenade.category() != scopeCategory) {
+                sender.sendMessage(grenade.title + " is not in the " + scopeCategory.title + " category."); return true;
+            }
+            int amount = 1;
+            int amountIndex = scopeWeapon != null || scopeCategory != null ? 4 : 3;
+            if (args.length > amountIndex) try { amount = Integer.parseInt(args[amountIndex]); } catch (NumberFormatException exception) { amount = 0; }
+            if (args.length > amountIndex + 1) { sender.sendMessage("Too many arguments. Use /arsenal ammo <player> <munition> [amount] or /arsenal ammo <player> <weapon> <munition> [amount]."); return true; }
             if (amount < 1 || amount > 64) { sender.sendMessage("Amount must be 1-64."); return true; }
             Map<Integer, ItemStack> leftover = target.getInventory().addItem(munition(grenade, amount));
             if (!leftover.isEmpty()) { sender.sendMessage("The player does not have enough inventory space."); return true; }
-            sender.sendMessage("Gave " + amount + " " + grenade.title + "(s) to " + target.getName() + ".");
+            sender.sendMessage("Gave " + amount + " [" + grenade.category().title + "] " + grenade.title + "(s) to " + target.getName() + ".");
             target.sendMessage(Component.text("Put the round in your offhand while holding its matching weapon.", NamedTextColor.GOLD));
             return true;
         }
@@ -882,13 +1051,22 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
 
     @Override public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!sender.hasPermission("arsenal.admin")) return List.of();
-        List<String> choices = args.length == 1 ? List.of("give", "ammo", "cooldown", "reload", "status")
-                : args.length == 2 && args[0].equalsIgnoreCase("give") ? getServer().getOnlinePlayers().stream().map(Player::getName).toList()
-                : args.length == 2 && args[0].equalsIgnoreCase("ammo") ? getServer().getOnlinePlayers().stream().map(Player::getName).toList()
-                : args.length == 2 && args[0].equalsIgnoreCase("cooldown") ? Arrays.stream(WeaponType.values()).map(t -> t.id).toList()
-                : args.length == 3 && args[0].equalsIgnoreCase("give") ? Arrays.stream(WeaponType.values()).map(t -> t.id).toList()
-                : args.length == 3 && args[0].equalsIgnoreCase("ammo") ? Arrays.stream(MunitionType.values()).map(t -> t.id).toList()
-                : List.of();
+        List<String> choices;
+        if (args.length == 1) choices = List.of("give", "ammo", "cooldown", "reload", "status", "handbook");
+        else if (args.length == 2 && args[0].equalsIgnoreCase("give")) choices = getServer().getOnlinePlayers().stream().map(Player::getName).toList();
+        else if (args.length == 2 && args[0].equalsIgnoreCase("ammo")) choices = getServer().getOnlinePlayers().stream().map(Player::getName).toList();
+        else if (args.length == 2 && args[0].equalsIgnoreCase("cooldown")) choices = Arrays.stream(WeaponType.values()).map(t -> t.id).toList();
+        else if (args.length == 3 && args[0].equalsIgnoreCase("give")) choices = Arrays.stream(WeaponType.values()).map(t -> t.id).toList();
+        else if (args.length == 3 && args[0].equalsIgnoreCase("ammo")) {
+            choices = new ArrayList<>(); choices.add("list"); choices.addAll(ammoScopes()); choices.addAll(Arrays.stream(MunitionType.values()).map(m -> m.id).toList());
+        } else if (args.length == 4 && args[0].equalsIgnoreCase("ammo") && args[2].equalsIgnoreCase("list")) {
+            choices = ammoScopes();
+        } else if (args.length == 4 && args[0].equalsIgnoreCase("ammo")) {
+            List<MunitionType> filtered = munitionsFor(args[2]);
+            choices = filtered.isEmpty() ? List.of() : filtered.stream().map(m -> m.id).toList();
+        } else if (args.length == 5 && args[0].equalsIgnoreCase("ammo")) {
+            choices = List.of("1", "4", "16", "64");
+        } else choices = List.of();
         String prefix = args.length == 0 ? "" : args[args.length - 1].toLowerCase(Locale.ROOT);
         return choices.stream().filter(choice -> choice.toLowerCase(Locale.ROOT).startsWith(prefix)).toList();
     }

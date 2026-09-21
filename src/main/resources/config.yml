@@ -48,6 +48,7 @@ weapons:
   howitzer:
     speed: 2.2
     gravity: 0.01
+    # Heavier than the mortar by default; shared artillery rounds are scaled by platform.
     explosion-power: 9.0
     cooldown-ticks: 100
     projectiles: 1
@@ -55,6 +56,7 @@ weapons:
   rocket-artillery:
     speed: 2.8
     gravity: 0.015
+    # Salvo volume compensates for the lower per-rocket impact.
     explosion-power: 5.0
     cooldown-ticks: 160
     projectiles: 1
