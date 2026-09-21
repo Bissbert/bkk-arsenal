@@ -22,8 +22,9 @@ After firing, the blaze-rod hotbar slot shows Minecraft's native cooldown overla
 
 ## Ammunition categories
 
-The system includes platform-specific ammo categories. Every round is labeled with its category in-game, and compatibility is explicit, so shared artillery rounds can still be used by every weapon for which they make sense.
+The system includes platform-specific ammo categories plus a universal category. Every round is labeled with its category in-game, and compatibility is explicit, so shared rounds can still be used by every weapon for which they make sense.
 
+- Universal: `entity_round`
 - Launcher: `he_rocket`, `demolition`, `sticky`
 - Shotgun: `buckshot`, `breaching`, `slug`, `incendiary_shot`
 - Rifle: `standard`, `armor_piercing`, `tracer`, `disruptor`
@@ -31,7 +32,7 @@ The system includes platform-specific ammo categories. Every round is labeled wi
 - Mortar: `he`, `penetrating`, `depth_charge`, `airburst`, `cluster`, `incendiary_grenade`, `smoke`, `illumination`
 - Artillery: `artillery_he`, `artillery_ap`, `artillery_smoke`, `artillery_illumination`, `rocket_salvo`, `incendiary_shell`, `aa_proximity`
 
-Every platform also accepts `entity_round`. It damages only the living entity it hits, never creates an explosion, and never changes blocks. Damage scales with the firing platform; the sniper profile is lethal to ordinary entities.
+Every platform accepts the universal `entity_round`. It damages only the living entity it hits, ignores passable foliage such as grass and vines, never creates an explosion, and never changes blocks. Damage scales with the firing platform; the sniper profile is lethal to ordinary entities.
 
 Use `/arsenal ammo <player> list` to print all categories. Use `/arsenal ammo <player> list <category-or-weapon>` to filter the list, or use a weapon-qualified grant such as `/arsenal ammo Bissbert mortar depth_charge 4`. The weapon-qualified form rejects incompatible ammunition before it is issued. Short form `/arsenal ammo <player> <munition> [amount]` remains available.
 

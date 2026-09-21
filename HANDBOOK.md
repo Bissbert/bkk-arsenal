@@ -28,11 +28,11 @@ Impact scaling is platform-specific: the mortar is the baseline, the field canno
 
 All paths below are 16×16 PNG sprites in `resource-pack/assets/arsenal/textures/item/`.
 
-### Shared entity round
+### Universal ammunition
 
 | ID | Platforms | Effect | Sprite |
 | --- | --- | --- | --- |
-| `entity_round` | Every platform | Direct living-entity damage only; no explosion and no environmental damage. Damage scales by gun, with the sniper profile set to lethal damage. | `entity_round.png` |
+| `entity_round` | Every platform | Direct living-entity damage only; passes through grass, vines, and other passable foliage; no explosion and no environmental damage. Damage scales by gun, with the sniper profile set to lethal damage. | `entity_round.png` |
 
 ### Launcher
 
