@@ -1,6 +1,6 @@
 # BKK Arsenal Handbook
 
-This is the field reference for the clean Arsenal system. Every weapon is a named blaze rod, every custom round is a firework star, and every item has a category label in its display name. The optional resource pack supplies one 16×16 vanilla-style sprite for each item.
+This is the field reference for the clean Arsenal system. Every weapon is a named blaze rod, every custom round is a firework star, and every item has a category label in its display name. The server-delivered resource pack supplies one distinct 16×16 vanilla-style sprite for each item and is required by the live server.
 
 ## Controls
 

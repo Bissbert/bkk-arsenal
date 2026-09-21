@@ -69,7 +69,7 @@ Smoke is emitted as a layered, drifting three-dimensional particle volume. Incen
 
 ## Resource pack
 
-The optional pack contains 16×16 vanilla-style sprites and models under the `arsenal` namespace for every weapon and ammunition type. Without it, the plugin remains fully functional using named blaze rods and firework stars. The pack has no dependency on the old plugin namespaces and is safe to merge into the existing Dungeons & Taverns pack by merging selector cases rather than replacing selector files.
+The pack contains distinct 16×16 vanilla-style sprites and models under the `arsenal` namespace for every weapon and ammunition type. The live server requires this pack so clients cannot silently use identical vanilla sprites; standalone plugin operation without the pack still falls back to named blaze rods and firework stars. The merged server archive preserves Dungeons & Taverns and has no dependency on retired namespaces.
 
 Build it with:
 
