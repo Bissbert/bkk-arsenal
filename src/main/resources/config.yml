@@ -1,0 +1,90 @@
+# Units: speed = blocks/tick, gravity = blocks/tick², cooldown = ticks (20/second).
+# All projectiles explode only on impact; expiry never explodes them.
+weapons:
+  launcher:
+    speed: 3.0
+    gravity: 0.03
+    explosion-power: 4.0
+    cooldown-ticks: 30
+    projectiles: 1
+    spread-degrees: 0.0
+  shotgun:
+    speed: 3.5
+    gravity: 0.035
+    explosion-power: 1.5
+    cooldown-ticks: 20
+    projectiles: 7
+    spread-degrees: 7.0
+  rifle:
+    # 45.25 blocks/tick = 905 blocks/second, approximately SIG-550 muzzle velocity.
+    speed: 45.25
+    gravity: 0.0245
+    explosion-power: 2.5
+    cooldown-ticks: 3
+    projectiles: 1
+    spread-degrees: 0.0
+  sniper:
+    speed: 60.0
+    gravity: 0.018
+    explosion-power: 5.0
+    cooldown-ticks: 40
+    projectiles: 1
+    spread-degrees: 0.0
+  mortar:
+    # Slow, long-lived shell intended for high-angle indirect fire.
+    speed: 2.0
+    gravity: 0.01
+    explosion-power: 8.0
+    cooldown-ticks: 100
+    projectiles: 1
+    spread-degrees: 0.0
+  field-cannon:
+    speed: 3.0
+    gravity: 0.012
+    explosion-power: 7.0
+    cooldown-ticks: 60
+    projectiles: 1
+    spread-degrees: 0.0
+  howitzer:
+    speed: 2.2
+    gravity: 0.01
+    explosion-power: 9.0
+    cooldown-ticks: 100
+    projectiles: 1
+    spread-degrees: 0.0
+  rocket-artillery:
+    speed: 2.8
+    gravity: 0.015
+    explosion-power: 5.0
+    cooldown-ticks: 160
+    projectiles: 1
+    spread-degrees: 5.0
+  aa-cannon:
+    speed: 12.0
+    gravity: 0.02
+    explosion-power: 3.0
+    cooldown-ticks: 8
+    projectiles: 1
+    spread-degrees: 0.0
+ammo-material: TNT
+ammo-per-shot: 1
+block-damage: true
+set-fire: false
+max-active-projectiles: 100
+mortar-grenades:
+  penetration-depth: 8.0
+  penetrating-power: 8.0
+  airburst-height: 8.0
+  airburst-power: 7.0
+mortar-targeting:
+  max-distance: 512.0
+  arc-clearance: 64.0
+smoke:
+  radius: 6.0
+  height: 6.0
+  density: 240
+  duration-ticks: 400
+incendiary:
+  fire-radius: 6
+  terrain-radius: 2
+# Creative players do not consume ammo. Weapons are obtained with /arsenal give.

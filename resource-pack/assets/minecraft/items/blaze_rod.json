@@ -1,0 +1,19 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "cases": [
+      {"when": "arsenal:launcher", "model": {"type": "minecraft:model", "model": "arsenal:item/launcher"}},
+      {"when": "arsenal:shotgun", "model": {"type": "minecraft:model", "model": "arsenal:item/shotgun"}},
+      {"when": "arsenal:rifle", "model": {"type": "minecraft:model", "model": "arsenal:item/rifle"}},
+      {"when": "arsenal:sniper", "model": {"type": "minecraft:model", "model": "arsenal:item/sniper"}},
+      {"when": "arsenal:mortar", "model": {"type": "minecraft:model", "model": "arsenal:item/mortar"}},
+      {"when": "arsenal:field_cannon", "model": {"type": "minecraft:model", "model": "arsenal:item/field_cannon"}},
+      {"when": "arsenal:howitzer", "model": {"type": "minecraft:model", "model": "arsenal:item/howitzer"}},
+      {"when": "arsenal:rocket_artillery", "model": {"type": "minecraft:model", "model": "arsenal:item/rocket_artillery"}},
+      {"when": "arsenal:aa_cannon", "model": {"type": "minecraft:model", "model": "arsenal:item/aa_cannon"}}
+    ],
+    "fallback": {"type": "minecraft:model", "model": "minecraft:item/blaze_rod"}
+  }
+}

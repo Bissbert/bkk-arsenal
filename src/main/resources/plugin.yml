@@ -1,0 +1,21 @@
+name: BKKArsenal
+version: '${project.version}'
+main: ch.bissbert.arsenal.ArsenalPlugin
+api-version: '1.21.11'
+author: Bissbert
+description: A modular ballistic weapons and artillery system.
+commands:
+  arsenal:
+    description: Give weapons/ammunition or manage Arsenal settings.
+    usage: /arsenal [give <player> [type] [amount]|ammo <player> <munition> [amount]|cooldown [type] <seconds>|reload|status]
+    permission: arsenal.admin
+permissions:
+  arsenal.admin:
+    description: Give weapons/ammunition and reload configuration.
+    default: op
+  arsenal.use:
+    description: Fire Arsenal weapons.
+    default: true
+  arsenal.infiniteammo:
+    description: Fire without consuming ammunition in survival.
+    default: false
