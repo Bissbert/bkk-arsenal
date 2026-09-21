@@ -587,6 +587,8 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
             if (remainingNanos <= 0) {
                 cooldowns.remove(uuid);
                 cooldownTotalTicks.remove(uuid);
+                if (weaponType(player.getInventory().getItemInMainHand()) != null)
+                    player.sendActionBar(Component.text("Ready to shoot again", NamedTextColor.GREEN));
                 continue;
             }
             int remainingTicks = Math.max(1, (int) Math.ceil(remainingNanos / 50_000_000.0));
