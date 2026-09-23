@@ -31,6 +31,7 @@ import java.util.*;
 
 public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExecutor {
     private enum AmmoCategory {
+        UNIVERSAL("universal", "Universal", NamedTextColor.WHITE),
         LAUNCHER("launcher", "Launcher", NamedTextColor.RED),
         SHOTGUN("shotgun", "Shotgun", NamedTextColor.GOLD),
         RIFLE("rifle", "Rifle", NamedTextColor.GREEN),
@@ -86,6 +87,9 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
         }
     }
     private enum MunitionType {
+        ENTITY_ROUND("entity_round", "Entity-Only Round", "arsenal:entity_round", WeaponType.LAUNCHER, NamedTextColor.WHITE,
+                WeaponType.SHOTGUN, WeaponType.RIFLE, WeaponType.SNIPER, WeaponType.MORTAR,
+                WeaponType.FIELD_CANNON, WeaponType.HOWITZER, WeaponType.ROCKET_ARTILLERY, WeaponType.AA_CANNON),
         HE_ROCKET("he_rocket", "HE Rocket", "arsenal:he_rocket", WeaponType.LAUNCHER, NamedTextColor.RED),
         DEMOLITION("demolition", "Demolition Rocket", "arsenal:demolition", WeaponType.LAUNCHER, NamedTextColor.DARK_RED),
         STICKY("sticky", "Sticky Charge", "arsenal:sticky", WeaponType.LAUNCHER, NamedTextColor.YELLOW),
@@ -133,7 +137,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
             return null;
         }
         AmmoCategory category() {
-            return AmmoCategory.forWeapon(weapon);
+            return this == ENTITY_ROUND ? AmmoCategory.UNIVERSAL : AmmoCategory.forWeapon(weapon);
         }
         static MunitionType standard(WeaponType weapon) { return switch (weapon) {
             case LAUNCHER -> HE_ROCKET; case SHOTGUN -> BUCKSHOT; case RIFLE -> STANDARD;
@@ -271,7 +275,8 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
         meta.displayName(category.append(Component.text(type.title, type.color)
                 .decoration(TextDecoration.ITALIC, false)));
         meta.lore(List.of(lore("Category: " + type.category().title),
-                lore(type.weapon.title + " ammunition."), lore("Hold in offhand to select this round.")));
+                lore(type == MunitionType.ENTITY_ROUND ? "Universal ammunition." : type.weapon.title + " ammunition."),
+                lore("Hold in offhand to select this round.")));
         meta.getPersistentDataContainer().set(grenadeKey, PersistentDataType.STRING, type.id);
         var model = meta.getCustomModelDataComponent(); model.setStrings(List.of(type.model)); meta.setCustomModelDataComponent(model);
         item.setItemMeta(meta);
@@ -656,7 +661,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
             if (munition == MunitionType.AA_PROXIMITY && hasNearbyTarget(world, position, owner, 6))
                 return detonate(shooter, position, options.power);
             RayTraceResult hit = world.rayTrace(position, direction, distance, FluidCollisionMode.ALWAYS,
-                    false, .225, entity -> entity.isValid() && !entity.getUniqueId().equals(owner)
+                    munition == MunitionType.ENTITY_ROUND, .225, entity -> entity.isValid() && !entity.getUniqueId().equals(owner)
                             && (entity instanceof LivingEntity || entity instanceof Vehicle || entity instanceof Hanging)
                             && (!(entity instanceof Player p) || p.getGameMode() != GameMode.SPECTATOR));
             if (hit != null) {
@@ -666,6 +671,15 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
                 }
                 if (munition == MunitionType.DEPTH_CHARGE && hit.getHitBlock() != null) {
                     spawnDepthCharge(shooter, impact, direction);
+                    finish();
+                    return false;
+                }
+                if (munition == MunitionType.ENTITY_ROUND) {
+                    if (hit.getHitEntity() instanceof LivingEntity target) {
+                        target.damage(entityDamage(), shooter);
+                        world.spawnParticle(Particle.CRIT, impact, 12, .15, .15, .15, .08);
+                        world.playSound(impact, Sound.ENTITY_ARROW_HIT_PLAYER, .8f, 1.25f);
+                    }
                     finish();
                     return false;
                 }
@@ -683,6 +697,20 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
                     position, 1, 0, 0, 0, 0);
             velocity.setY(velocity.getY() - options.gravity);
             return true;
+        }
+
+        private double entityDamage() {
+            return switch (weapon) {
+                case LAUNCHER -> 10.0;
+                case SHOTGUN -> 5.0;
+                case RIFLE -> 18.0;
+                case SNIPER -> 1000.0;
+                case MORTAR -> 28.0;
+                case FIELD_CANNON -> 40.0;
+                case HOWITZER -> 60.0;
+                case ROCKET_ARTILLERY -> 24.0;
+                case AA_CANNON -> 14.0;
+            };
         }
 
         private boolean hasNearbyTarget(World world, Location center, UUID owner, double radius) {
@@ -909,7 +937,9 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
                 .filter(munition -> munition.compatible.contains(weapon)).toList();
         AmmoCategory category = AmmoCategory.parse(scope);
         if (category != null) return Arrays.stream(MunitionType.values())
-                .filter(munition -> munition.category() == category).toList();
+                .filter(munition -> munition.category() == category
+                        || munition.compatible.stream().map(AmmoCategory::forWeapon)
+                        .anyMatch(category::equals)).toList();
         return List.of();
     }
 
@@ -931,7 +961,7 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
             return;
         }
         if (scope == null) {
-            sender.sendMessage("Ammo categories: launcher, shotgun, rifle, sniper, mortar, artillery.");
+            sender.sendMessage("Ammo categories: universal, launcher, shotgun, rifle, sniper, mortar, artillery.");
             for (AmmoCategory category : AmmoCategory.values()) sendAmmoList(sender, category.id);
             return;
         }
@@ -1052,7 +1082,9 @@ public final class ArsenalPlugin extends JavaPlugin implements Listener, TabExec
             if (scopeWeapon != null && !grenade.compatible.contains(scopeWeapon)) {
                 sender.sendMessage(grenade.title + " is not compatible with the " + scopeWeapon.title + "."); return true;
             }
-            if (scopeCategory != null && grenade.category() != scopeCategory) {
+            if (scopeWeapon == null && scopeCategory != null
+                    && grenade.category() != scopeCategory
+                    && !(grenade.compatible.stream().map(AmmoCategory::forWeapon).anyMatch(scopeCategory::equals))) {
                 sender.sendMessage(grenade.title + " is not in the " + scopeCategory.title + " category."); return true;
             }
             int amount = 1;
