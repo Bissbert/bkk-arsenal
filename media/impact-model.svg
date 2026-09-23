@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="700" viewBox="0 0 1120 700">
+<rect width="1120" height="700" fill="#0d1117"/>
+<rect x="24" y="24" width="1072" height="652" rx="12" fill="#161b22" stroke="#30363d"/>
+<text x="52" y="64" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="22px" font-weight="700" text-anchor="start">Impact power is not attenuated by travel distance</text>
+<text x="52" y="88" fill="#8b949e" font-family="system-ui, sans-serif" font-size="13px" font-weight="400" text-anchor="start">Configured power and platform scaling for shared artillery HE; no distance-falloff function exists</text>
+<line x1="90" y1="120" x2="90" y2="575" stroke="#30363d"/>
+<line x1="90" y1="575" x2="1060" y2="575" stroke="#30363d"/>
+<text x="78" y="125" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="end">13.05</text>
+<text x="78" y="575" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="end">0</text>
+<text x="575.0" y="621" fill="#8b949e" font-family="system-ui, sans-serif" font-size="13px" font-weight="400" text-anchor="middle">weapon defaults</text>
+<text x="36" y="347.5" fill="#8b949e" font-family="system-ui, sans-serif" font-size="13px" font-weight="400" text-anchor="middle">explosion power</text>
+<line x1="90" y1="575.0" x2="1060" y2="575.0" stroke="#30363d" stroke-dasharray="3 5"/>
+<text x="78" y="579.0" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="end">0.00</text>
+<line x1="90" y1="347.5" x2="1060" y2="347.5" stroke="#30363d" stroke-dasharray="3 5"/>
+<text x="78" y="351.5" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="end">6.52</text>
+<line x1="90" y1="120.0" x2="1060" y2="120.0" stroke="#30363d" stroke-dasharray="3 5"/>
+<text x="78" y="124.0" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="end">13.05</text>
+<rect x="119.9" y="435.5" width="22" height="139.5" fill="#58a6ff"/>
+<text x="143.88888888888889" y="595" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="11px" font-weight="400" text-anchor="middle">launcher</text>
+<text x="143.88888888888889" y="609" fill="#8b949e" font-family="system-ui, sans-serif" font-size="10px" font-weight="400" text-anchor="middle">4</text>
+<rect x="227.7" y="522.7" width="22" height="52.3" fill="#58a6ff"/>
+<text x="251.66666666666666" y="595" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="11px" font-weight="400" text-anchor="middle">shotgun</text>
+<text x="251.66666666666666" y="609" fill="#8b949e" font-family="system-ui, sans-serif" font-size="10px" font-weight="400" text-anchor="middle">1.5</text>
+<rect x="335.4" y="487.8" width="22" height="87.2" fill="#58a6ff"/>
+<text x="359.44444444444446" y="595" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="11px" font-weight="400" text-anchor="middle">rifle</text>
+<text x="359.44444444444446" y="609" fill="#8b949e" font-family="system-ui, sans-serif" font-size="10px" font-weight="400" text-anchor="middle">2.5</text>
+<rect x="443.2" y="400.7" width="22" height="174.3" fill="#58a6ff"/>
+<text x="467.2222222222222" y="595" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="11px" font-weight="400" text-anchor="middle">sniper</text>
+<text x="467.2222222222222" y="609" fill="#8b949e" font-family="system-ui, sans-serif" font-size="10px" font-weight="400" text-anchor="middle">5</text>
+<rect x="551.0" y="296.1" width="22" height="278.9" fill="#58a6ff"/>
+<text x="575.0" y="595" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="11px" font-weight="400" text-anchor="middle">mortar</text>
+<text x="575.0" y="609" fill="#8b949e" font-family="system-ui, sans-serif" font-size="10px" font-weight="400" text-anchor="middle">8</text>
+<rect x="658.8" y="330.9" width="22" height="244.1" fill="#58a6ff"/>
+<rect x="684.8" y="294.3" width="22" height="280.7" fill="#d29922"/>
+<text x="682.7777777777777" y="595" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="11px" font-weight="400" text-anchor="middle">field-cannon</text>
+<text x="682.7777777777777" y="609" fill="#8b949e" font-family="system-ui, sans-serif" font-size="10px" font-weight="400" text-anchor="middle">7</text>
+<rect x="766.6" y="261.2" width="22" height="313.8" fill="#58a6ff"/>
+<rect x="792.6" y="120.0" width="22" height="455.0" fill="#d29922"/>
+<text x="790.5555555555555" y="595" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="11px" font-weight="400" text-anchor="middle">howitzer</text>
+<text x="790.5555555555555" y="609" fill="#8b949e" font-family="system-ui, sans-serif" font-size="10px" font-weight="400" text-anchor="middle">9</text>
+<rect x="874.3" y="400.7" width="22" height="174.3" fill="#58a6ff"/>
+<rect x="900.3" y="435.5" width="22" height="139.5" fill="#d29922"/>
+<text x="898.3333333333333" y="595" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="11px" font-weight="400" text-anchor="middle">rocket-artillery</text>
+<text x="898.3333333333333" y="609" fill="#8b949e" font-family="system-ui, sans-serif" font-size="10px" font-weight="400" text-anchor="middle">5</text>
+<rect x="982.1" y="470.4" width="22" height="104.6" fill="#58a6ff"/>
+<text x="1006.1111111111111" y="595" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="11px" font-weight="400" text-anchor="middle">aa-cannon</text>
+<text x="1006.1111111111111" y="609" fill="#8b949e" font-family="system-ui, sans-serif" font-size="10px" font-weight="400" text-anchor="middle">3</text>
+<rect x="820" y="58" width="14" height="14" fill="#58a6ff"/>
+<text x="842" y="70" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="start">configured power</text>
+<rect x="980" y="58" width="14" height="14" fill="#d29922"/>
+<text x="1002" y="70" fill="#c9d1d9" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="start">shared HE scaled</text>
+<text x="52" y="666" fill="#8b949e" font-family="system-ui, sans-serif" font-size="12px" font-weight="400" text-anchor="start">A projectile deals no impact damage while in flight; power is selected when it detonates.</text>
+</svg>
