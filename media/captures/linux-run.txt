@@ -1,0 +1,38 @@
+
+=== environment
+Linux 6.5.11-linuxkit aarch64
+Python 3.12.3
+openjdk version "21.0.12" 2026-07-21 LTS
+Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+
+=== tools/catalogue.py
+source counts: categories=7 weapons=9 munitions=31 tuning_keys=14 config_keys=71
+wrote docs/items-and-ammunition.md
+docs/items-and-ammunition.md unchanged
+
+=== tools/ballistics.py
+trajectory: direct_weapons=5 max_ticks=40 max_drop=27.300 blocks
+impact model: weapons=9 chart_max=13.050 power
+wrote media/trajectory.svg and media/impact-model.svg
+media/trajectory.svg byte-identical
+media/impact-model.svg byte-identical
+
+=== tools/packcheck.py
+pack files: textures=47 models=40 selector_cases=47
+shell texture files: 7
+texture format: 16x16/8bit/color_type_6
+non-16x16 RGBA textures: none
+selector cases missing source IDs: none
+selector cases not in source IDs: none
+source model tokens not in selector cases: none
+selector target model files missing: none
+exit=0
+
+=== mvn -B -q verify
+exit=0
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in ch.bissbert.arsenal.FlightStateTest
+51675 target/BKKArsenal-1.1.0.jar
+
+=== resource pack archive
+    30657                     98 files
+42555 bytes

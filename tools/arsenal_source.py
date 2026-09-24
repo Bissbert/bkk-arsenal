@@ -133,10 +133,16 @@ def munitionen(text=None):
     for m in re.finditer(r'->\s*([A-Z_]+);', std_body):
         standard.add(m.group(1))
 
+    # MunitionType.category() may single out munitions before falling back to
+    # AmmoCategory.forWeapon, e.g. `this == ENTITY_ROUND ? AmmoCategory.UNIVERSAL : ...`.
+    cat_body = text[text.index("AmmoCategory category()"):]
+    cat_body = cat_body[:cat_body.index("}")]
+    ausnahmen = dict(re.findall(r'this == ([A-Z_]+) \? AmmoCategory\.([A-Z_]+)', cat_body))
+
     fuer_waffe = {w["konstante"]: w for w in waffen(text)}
     for mun in liste:
         mun["standard"] = mun["konstante"] in standard
-        mun["kategorie"] = _kategorie_fuer(fuer_waffe[mun["waffe"]]["konstante"], text)
+        mun["kategorie"] = ausnahmen.get(mun["konstante"]) or _kategorie_fuer(fuer_waffe[mun["waffe"]]["konstante"], text)
     return liste
 
 

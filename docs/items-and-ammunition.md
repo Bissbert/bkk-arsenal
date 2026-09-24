@@ -7,6 +7,8 @@ the weapon enums or their defaults; the tables below are not maintained by hand.
 
 ```mermaid
 flowchart LR
+    cat_universal["Universal ammo"]
+    cat_universal --> aa_cannon["aa_cannon"] & field_cannon["field_cannon"] & howitzer["howitzer"] & launcher["launcher"] & mortar["mortar"] & rifle["rifle"] & rocket_artillery["rocket_artillery"] & shotgun["shotgun"] & sniper["sniper"]
     cat_launcher["Launcher ammo"]
     cat_launcher --> launcher["launcher"]
     cat_shotgun["Shotgun ammo"]
@@ -52,6 +54,7 @@ round is the platform's default payload when the offhand is empty.
 
 | ID | Display title | Category | Compatible weapons | Standard | Model token |
 |---|---|---|---|---|---|
+| `entity_round` | Entity-Only Round | universal | `launcher`, `shotgun`, `rifle`, `sniper`, `mortar`, `field_cannon`, `howitzer`, `rocket_artillery`, `aa_cannon` | no | `arsenal:entity_round` |
 | `he_rocket` | HE Rocket | launcher | `launcher` | yes | `arsenal:he_rocket` |
 | `demolition` | Demolition Rocket | launcher | `launcher` | no | `arsenal:demolition` |
 | `sticky` | Sticky Charge | launcher | `launcher` | no | `arsenal:sticky` |
@@ -85,8 +88,8 @@ round is the platform's default payload when the offhand is empty.
 
 ## Other source values
 
-The parser currently sees 6 ammo categories, 9 weapons,
-30 ammunition types, 14 tunable defaults, and
+The parser currently sees 7 ammo categories, 9 weapons,
+31 ammunition types, 14 tunable defaults, and
 71 shipped config keys. These counts are emitted by the generator and
 are covered by the provenance notes in [measurement](measurement.md).
 
