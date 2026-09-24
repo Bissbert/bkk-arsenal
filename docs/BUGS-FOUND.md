@@ -2,43 +2,49 @@
 
 [← back to the overview](../README.md)
 
-This file records tracked-source issues found while documenting the repository.
-No tracked source or resource file was changed.
+One issue was found while documenting the repository. It has been fixed on
+`main`.
 
-## Shared artillery custom-model tokens do not match the selector
+| Issue | Status |
+|---|---|
+| [Shared artillery model tokens did not match the selector](#shared-artillery-custom-model-tokens-did-not-match-the-selector) | Fixed in [`48eccff`](https://github.com/Bissbert/bkk-arsenal/commit/48eccff) |
 
-Files and lines:
+## Shared artillery custom-model tokens did not match the selector
 
-- `src/main/java/ch/bissbert/arsenal/ArsenalPlugin.java:112-123` declares seven
+**Status: fixed in `48eccff`.** The selector gained a case for each
+`arsenal:shell_*` token; see [What was changed](#what-was-changed).
+
+Files and lines, as of `main` today:
+
+- `src/main/java/ch/bissbert/arsenal/ArsenalPlugin.java:116-127` declares seven
   shared artillery ammunition model tokens as `arsenal:shell_*`.
-- `src/main/java/ch/bissbert/arsenal/ArsenalPlugin.java:276` writes that token
+- `src/main/java/ch/bissbert/arsenal/ArsenalPlugin.java:281` writes that token
   to the firework-star item's custom-model-data component.
-- `resource-pack/assets/minecraft/items/firework_star.json:30-36` selects the
+- `resource-pack/assets/minecraft/items/firework_star.json:38-44` selects the
   ammunition IDs `arsenal:artillery_*`, `arsenal:rocket_salvo`, and
-  `arsenal:aa_proximity` instead.
+  `arsenal:aa_proximity`. Before the fix these were the only cases; lines
+  31-37 now add the `arsenal:shell_*` spellings.
 
-What happens: the source IDs and selector cases cover the same ammunition IDs,
+What happened: the source IDs and selector cases cover the same ammunition IDs,
 but the model token written into seven shared artillery rounds is not a selector
-case. Those rounds can therefore take the firework-star fallback instead of
-their custom model. The repository also contains the seven `shell_*.png`
-texture names, but the checked-in selector path does not reach them through the
-tokens emitted by the plugin.
+case. Those rounds therefore took the firework-star fallback instead of
+their custom model.
 
-How to reproduce the static mismatch:
+How the mismatch was reproduced before the fix:
 
 ```sh
 python3 tools/packcheck.py
 ```
 
-The command reports `source model tokens not in selector cases` followed by
+The command reported `source model tokens not in selector cases` followed by
 `shell_airburst`, `shell_ap`, `shell_cluster`, `shell_flare`, `shell_he`,
-`shell_incendiary`, and `shell_smoke`, then exits nonzero. A live reproduction
+`shell_incendiary`, and `shell_smoke`, then exited nonzero. A live reproduction
 would issue one of those rounds, put it in the offhand, fire its compatible
 weapon, and inspect the client model with the pack enabled; that server/client
-run was not available for this pass.
+run was not available, and still has not been done.
 
-The fix I would make, but did not apply under the documentation-only contract,
-is to make each enum token match its existing selector case:
+The diff first proposed here changed the seven enum tokens to match the
+existing selector cases:
 
 ```diff
 diff --git a/src/main/java/ch/bissbert/arsenal/ArsenalPlugin.java b/src/main/java/ch/bissbert/arsenal/ArsenalPlugin.java
@@ -65,7 +71,24 @@ diff --git a/src/main/java/ch/bissbert/arsenal/ArsenalPlugin.java b/src/main/jav
 +        AA_PROXIMITY("aa_proximity", "Proximity Anti-Air Shell", "arsenal:aa_proximity", WeaponType.AA_CANNON, NamedTextColor.AQUA);
 ```
 
-Until that is addressed, the mismatch remains a known limitation in the
-[resource-pack write-up](resource-pack.md) and the root README.
+## What was changed
+
+`48eccff` took the other route: it left the Java tokens alone and added seven
+cases to `resource-pack/assets/minecraft/items/firework_star.json`, each mapping
+an `arsenal:shell_*` token to the existing artillery model. Changing the tokens
+would have left rounds already issued on a server pointing at a case that no
+longer exists; adding cases keeps both spellings working.
+
+`tools/packcheck.py` now expects a selector case for every munition ID and for
+every model token, and exits 0 on `main`. Run in a Linux container
+([capture](../media/captures/linux-run.txt)):
+
+```text
+selector cases missing source IDs: none
+selector cases not in source IDs: none
+source model tokens not in selector cases: none
+selector target model files missing: none
+exit=0
+```
 
 [← back to the overview](../README.md)

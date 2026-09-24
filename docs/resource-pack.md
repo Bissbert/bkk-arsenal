@@ -39,22 +39,22 @@ selector JSON files. The checked-in pack contains:
 
 | Asset or check | Result |
 |---|---|
-| Item textures | 46 files; all are 16×16, 8-bit PNG color type 6 (RGBA). |
-| Item models | 39 JSON files. |
-| Selector cases | 39 cases across the blaze-rod and firework-star selectors. |
+| Item textures | 47 files; all are 16×16, 8-bit PNG color type 6 (RGBA). |
+| Item models | 40 JSON files. |
+| Selector cases | 47 cases across the blaze-rod and firework-star selectors. |
 | Selector target files | No missing model files. |
-| Source IDs vs selector cases | No missing or extra IDs. |
-| Source model tokens vs firework selector | Seven mismatches: `shell_airburst`, `shell_ap`, `shell_cluster`, `shell_flare`, `shell_he`, `shell_incendiary`, `shell_smoke`. |
+| Source IDs and model tokens vs selector cases | No missing or extra cases. |
 
-The last row is a real source/pack mismatch, not a measurement failure. The
-munition enum writes those `arsenal:shell_*` strings, while the selector cases
-use `arsenal:aa_proximity`, `arsenal:artillery_ap`, `arsenal:rocket_salvo`, and
-the other munition IDs. The audit exits nonzero so a future change can make this
-contract fail loudly. This pass does not change runtime behavior.
+Seven shared artillery rounds write `arsenal:shell_*` model tokens rather than
+their munition IDs. The firework-star selector has a case for each spelling:
+`arsenal:shell_he` and `arsenal:artillery_he` both resolve to
+`arsenal:item/artillery_he`, and likewise for the other six. Keeping the
+`shell_*` tokens means items already issued on a server keep their model. The
+audit exits nonzero if any token the plugin writes loses its case.
 
-There are also seven `shell_*.png` texture files alongside the 39 textures
-named by the weapon and munition IDs. They are present in the pack but the
-current audit does not claim that each one is reachable from a selector case.
+There are also seven `shell_*.png` texture files alongside the 40 textures
+named by the weapon and munition IDs. No model references them, so they are
+present in the pack but not rendered.
 
 ## Packaging
 
@@ -64,9 +64,7 @@ From the repository root:
 (cd resource-pack && zip -qr ../target/BKKArsenal-resource-pack-1.1.0.zip pack.mcmeta assets)
 ```
 
-The verified local packaging command created a 96-entry archive of 41,674
-bytes. The archive can be merged with other packs at the server level, but the
-selector-token mismatch above should be resolved before treating every custom
-round as visually covered.
+In the Linux container this created a 98-entry archive of 42,555 bytes. The
+archive can be merged with other packs at the server level.
 
 [← back to the overview](../README.md)

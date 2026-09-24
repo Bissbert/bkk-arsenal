@@ -134,23 +134,24 @@ Only already-generated chunks are ticketed; the plugin does not generate terrain
 
 Smoke is emitted as a layered, drifting three-dimensional particle volume. Incendiaries preserve full entity damage radius while using a small terrain crater and a larger persistent fire patch. Temporary illumination lights share ownership and restore their original blocks.
 
-## Measured results
+## Results
 
 ![Impact model](media/impact-model.svg)
 
-The repository-side checks produced these results:
+The repository-side checks, run in a Linux container (`sh tools/linux-run.sh`), produced these results:
 
 | Check | Result |
 |---|---|
 | `mvn verify` | Build success; three `FlightStateTest` tests passed. |
-| Source catalogue | Six categories, nine weapons, thirty ammunition types, fourteen tunable defaults, and seventy-one shipped config keys. |
+| Source catalogue | Seven categories, nine weapons, thirty-one ammunition types, fourteen tunable defaults, and seventy-one shipped config keys. |
 | Ballistics charts | Five direct weapons plotted through forty ticks; the maximum plotted drop is 27.300 blocks. |
-| Resource-pack audit | Forty-six textures, thirty-nine models, thirty-nine selector cases; every texture is 16×16, 8-bit PNG color type 6 (RGBA). |
-| Resource-pack token audit | Seven shared artillery model tokens were missing from the firework-star selector at the time of this pass; they have since been mapped on the default branch. |
+| Resource-pack audit | Forty-seven textures, forty models, forty-seven selector cases; every texture is 16×16, 8-bit PNG color type 6 (RGBA). |
+| Resource-pack token audit | Every model token the plugin writes has a selector case; `packcheck.py` exits 0. |
 | In-game capture | Not measured: it requires a running Paper server and a Minecraft client. |
 
-The exact commands, raw outputs, derived-chart formulas, and the known pack
-audit failure are recorded in [docs/measurement.md](docs/measurement.md).
+The exact commands, raw outputs and derived-chart formulas are recorded in
+[docs/measurement.md](docs/measurement.md); the full container output is
+[media/captures/linux-run.txt](media/captures/linux-run.txt).
 
 ## Handbook
 
@@ -176,26 +177,21 @@ zip -r target/BKKArsenal-resource-pack-1.1.0.zip pack.mcmeta assets
 | `HANDBOOK.md` | Printable field reference maintained alongside the plugin. |
 | `resource-pack/` | Item selectors, model JSON, and `arsenal` textures. |
 | `art-generated/` | Existing weapon and ammunition art sheets. |
-| `tools/` | Source parser, catalogue generator, chart generator, and pack audit. |
+| `tools/` | Source parser, catalogue generator, chart generator, pack audit, and `linux-run.sh`, which runs them all in a container. |
 | `media/` | Source-derived SVG charts used by the README and ballistics write-up. |
 | `docs/` | Subsystem write-ups and measurement provenance. |
 
 ## Known limitations
 
-- The plugin was not exercised in a live Paper server during this pass. The
+- The plugin has not been exercised in a live Paper server. The
   build and unit tests pass, but target locking, collision, effects, permissions,
   cooldown UI, and cleanup still need an in-game run.
 - Damage has no distance-falloff function. A projectile does not deal damage in
   flight; when a collision or trigger calls `detonate`, payload and platform
   constants choose the impact power. The impact chart makes that absence
   explicit.
-- The seven shared artillery rounds originally shipped `arsenal:shell_*`
-  custom-model tokens that `firework_star.json` did not select, so they fell
-  back to the vanilla firework-star model. The selector cases have since been
-  added on the default branch; the original reproduction is kept in
-  [BUGS-FOUND](docs/BUGS-FOUND.md) for provenance.
 - `HANDBOOK.md` and the in-game handbook describe the same feature set but are
   separate texts. They are not generated from one shared source and can drift.
-- There is no real-run GIF in this pass. Capturing one honestly requires a
+- There is no real-run GIF. Capturing one honestly requires a
   running server and client, so the deliverable uses diagrams and source-derived
   charts only.

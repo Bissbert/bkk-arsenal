@@ -12,7 +12,7 @@ implementation.
 | Items | [Weapons and ammunition](items-and-ammunition.md) | Source-derived weapon defaults, payload compatibility, and model tokens. |
 | Commands | [Commands and handbook](commands-and-handbook.md) | Command surface, permissions, cooldown feedback, and handbook relationship. |
 | Pack | [Resource pack](resource-pack.md) | Vanilla base items routed through selectors, models, and textures. |
-| Method | [Measurement](measurement.md) | Commands, formulas, provenance, and what could not be verified. |
-| Findings | [Bugs found](BUGS-FOUND.md) | Tracked-source issues found during the pass, with reproduction and unapplied fixes. |
+| Method | [Measurement](measurement.md) | Commands run in a Linux container, formulas, provenance, and what could not be verified. |
+| Findings | [Bugs found](BUGS-FOUND.md) | The one issue found during the pass, and how it was fixed. |
 
 [← back to the overview](../README.md)

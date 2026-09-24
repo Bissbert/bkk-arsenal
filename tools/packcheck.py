@@ -55,7 +55,9 @@ def main():
     actual_case_tokens = {
         case["when"].split(":", 1)[-1] for case in all_cases
     }
-    expected_cases = weapon_tokens | ammo_tokens
+    # The firework-star selector keeps a case for every munition ID and for
+    # every model token the plugin writes, so both spellings are expected.
+    expected_cases = weapon_tokens | ammo_tokens | source_model_tokens
     missing_cases = sorted(expected_cases - actual_case_tokens)
     extra_cases = sorted(actual_case_tokens - expected_cases)
     missing_model_tokens = sorted(source_model_tokens - actual_case_tokens)
