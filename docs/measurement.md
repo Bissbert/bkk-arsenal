@@ -117,8 +117,9 @@ exit=0
 ```
 
 Every munition ID and every model token the plugin writes has a selector case.
-The command exits nonzero if one goes missing. Before `48eccff` it reported
-seven `shell_*` tokens here; see [Bugs found](BUGS-FOUND.md).
+The command exits nonzero if one goes missing. Before
+[`48eccff`](https://github.com/Bissbert/bkk-arsenal/commit/48eccff) it reported
+seven `shell_*` tokens here.
 
 ## Build and package checks
 
